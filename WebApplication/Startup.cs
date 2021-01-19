@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WebApplication.Services;
 
 namespace WebApplication
 {
@@ -26,6 +27,11 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            
+            services.AddHttpClient<IUserService, UserService>(client =>
+            {
+                client.BaseAddress = new Uri("https://randomuser.me/api/");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
