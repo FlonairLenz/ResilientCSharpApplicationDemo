@@ -23,20 +23,24 @@ namespace WebApplication
             services.AddControllers();
 
             // Use HttpClient Factory
-            services.AddHttpClient<IUserService, UserService>(client =>
+            services.AddHttpClient(nameof(UserService), client =>
             {
                 client.BaseAddress = new Uri(this.Configuration["UserApiBaseAddress"]);
             });
 
             // Use timeout resilitent pattern
-            services.AddHttpClient<ICalculateLongRunningService, CalculateLongRunningService>(
+            services.AddHttpClient(nameof(CalculateLongRunningService),
                 client => client.BaseAddress = new Uri(this.Configuration["LongRunningApiBaseAddress"]))
                 .AddPolicyHandler(CalculateLongRunningService.GetPolicies());
 
             // Use timeout with fallback
-            services.AddHttpClient<ICalculateLongRunningWithFallbackService, CalculateLongRunningWithFallbackService>(
+            services.AddHttpClient(nameof(CalculateLongRunningWithFallbackService),
                 client => { client.BaseAddress = new Uri(this.Configuration["LongRunningApiBaseAddress"]); })
                 .AddPolicyHandler(CalculateLongRunningWithFallbackService.GetPolicies());
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICalculateLongRunningService, CalculateLongRunningService>();
+            services.AddScoped<ICalculateLongRunningWithFallbackService, CalculateLongRunningWithFallbackService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -11,9 +11,9 @@ namespace WebApplication.Services
         private const int Timeout = 2;
         private readonly HttpClient httpClient;
 
-        public CalculateLongRunningService(HttpClient httpClient)
+        public CalculateLongRunningService(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            this.httpClient = httpClientFactory.CreateClient(nameof(CalculateLongRunningService)) ?? throw new ArgumentNullException(nameof(httpClient));
         }
         
         public Task<string> CalculateLongRunningApi()

@@ -11,9 +11,9 @@ namespace WebApplication.Services
     {
         private readonly HttpClient httpClient;
 
-        public UserService(HttpClient httpClient)
+        public UserService(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            this.httpClient = httpClientFactory?.CreateClient(nameof(UserService)) ?? throw new ArgumentNullException(nameof(httpClient));
         }
         
         public async Task<UserModel> GetUserAsync()
