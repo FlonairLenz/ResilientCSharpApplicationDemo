@@ -10,7 +10,7 @@ namespace HeavyLoadSystemApi.Controllers
         [HttpGet]
         public async Task<string> GetResultAsync()
         {
-            await Task.Delay(2200);
+            await Task.Delay(5200);
             return await Task.FromResult("Done");
         }
     }

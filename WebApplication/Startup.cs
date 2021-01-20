@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebApplication.Configuration;
 using WebApplication.Services;
 
 namespace WebApplication
@@ -21,11 +22,19 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            
+
+            // Use HttpClient Factory
             services.AddHttpClient<IUserService, UserService>(client =>
             {
                 client.BaseAddress = new Uri(this.Configuration["UserApiBaseAddress"]);
             });
+
+            // Use timeout resilitent pattern
+            services.AddHttpClient<ICalculateLongRunningService, CalculateLongRunningService>(client =>
+                {
+                    client.BaseAddress = new Uri(this.Configuration["LongRunningApiBaseAddress"]);
+                })
+                .AddPolicyHandler(ResilientHttpHandlerPolicies.GetTimeoutPolicy($"{ nameof(CalculateLongRunningService) } does not return any data."));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
