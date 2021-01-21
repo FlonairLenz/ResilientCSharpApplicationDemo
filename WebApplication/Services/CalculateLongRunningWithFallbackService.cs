@@ -10,16 +10,16 @@ namespace WebApplication.Services
     public class CalculateLongRunningWithFallbackService : ICalculateLongRunningWithFallbackService
     {
         private const int Timeout = 2;
-        private readonly HttpClient httpClient;
+        private readonly IHttpClientFactory httpClientFactory;
 
         public CalculateLongRunningWithFallbackService(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClientFactory?.CreateClient(nameof(CalculateLongRunningWithFallbackService)) ?? throw new ArgumentNullException(nameof(httpClient));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
         
         public Task<string> CalculateLongRunningApi()
         {
-            return this.httpClient.GetStringAsync("");
+            return this.httpClientFactory.CreateClient(nameof(CalculateLongRunningWithFallbackService)).GetStringAsync("");
         }
 
         public static IAsyncPolicy<HttpResponseMessage> GetPolicies()

@@ -9,16 +9,17 @@ namespace WebApplication.Services
 {
     public class UserService : IUserService
     {
-        private readonly HttpClient httpClient;
+        private readonly IHttpClientFactory httpClientFactory;
 
         public UserService(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClientFactory?.CreateClient(nameof(UserService)) ?? throw new ArgumentNullException(nameof(httpClient));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
         
         public async Task<UserModel> GetUserAsync()
         {
-            var userResponseString = await this.httpClient.GetStringAsync("");
+            using var httpClient = this.httpClientFactory.CreateClient(nameof(UserService));
+            var userResponseString = await httpClient.GetStringAsync("");
             var userJson = JsonConvert.DeserializeObject<JObject>(userResponseString);
             var user = userJson["results"]?[0]?["name"]?.ToObject<UserModel>();
 
@@ -26,7 +27,7 @@ namespace WebApplication.Services
             {
                 throw new Exception("Error while calling user");
             }
-            
+
             return user;
         }
     }
