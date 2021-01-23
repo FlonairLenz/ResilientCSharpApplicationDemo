@@ -1,9 +1,9 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebApplication.Configuration;
 using WebApplication.Services;
 
 namespace WebApplication
@@ -21,26 +21,8 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
-            // Use HttpClient Factory
-            services.AddHttpClient(nameof(UserService), client =>
-            {
-                client.BaseAddress = new Uri(this.Configuration["UserApiBaseAddress"]);
-            });
-
-            // Use timeout resilitent pattern
-            services.AddHttpClient(nameof(CalculateLongRunningService),
-                client => client.BaseAddress = new Uri(this.Configuration["LongRunningApiBaseAddress"]))
-                .AddPolicyHandler(CalculateLongRunningService.GetPolicies());
-
-            // Use timeout with fallback
-            services.AddHttpClient(nameof(CalculateLongRunningWithFallbackService),
-                client => { client.BaseAddress = new Uri(this.Configuration["LongRunningApiBaseAddress"]); })
-                .AddPolicyHandler(CalculateLongRunningWithFallbackService.GetPolicies());
-
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICalculateLongRunningService, CalculateLongRunningService>();
-            services.AddScoped<ICalculateLongRunningWithFallbackService, CalculateLongRunningWithFallbackService>();
+            services.AddHttpClientFactoryWithPolicies(this.Configuration);
+            services.AddServiceDependencies();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
